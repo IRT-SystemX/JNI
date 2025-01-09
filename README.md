@@ -11,6 +11,11 @@ The following off-the-shelf components are available:
 * [JNI data-bridge](data-bridge)
 * [JNI deployment](deployment)
 
+## Linked scientific contributions 
+This implementation is aligned with the IEC 63278 standard and the Asset Administration Shell vision of Industry 4.0. [This article](https://hal.science/hal-04612160/document) presents 19 criteria applied to the selection of existing open-source implementations, as well as the integration of these into a technical architecture and its implementation.
+
+For more details about the State of the Art analysis and components selection criteria, please refer to this [paper](https://hal.science/hal-04612160/document)
+
 
 ## JNI Platform : docker-compose files
 [docker-compose.yml](docker-compose.yml) configuration file illustrates the setup for the maven build and test project.
