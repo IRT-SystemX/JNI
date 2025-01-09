@@ -1,0 +1,21 @@
+[
+	{
+		"uniqueId": "ConnectedSubmodel/OilTemperatureMeasurement",
+		"submodelEndpoint": "http://localhost:8081/submodels/aHR0cHM6Ly9leGFtcGxlLmNvbS9pZHMvc20vNzM4MF82MTgyXzExMzJfNjMyOA==",
+		"idShortPath": "OilTemperatureMeasurement.OilTemperatureMeasurementValue.MeasurementValueSource",
+		"api": "DotAAS-V3"
+	},
+	{
+		"uniqueId": "ConnectedSubmodel/OilTemperatureOperationalLimitPercent",
+		"submodelEndpoint": "http://localhost:8081/submodels/aHR0cHM6Ly9leGFtcGxlLmNvbS9pZHMvc20vMjE1NV81MTAzXzExMzJfMzU4NQ==",
+		"idShortPath": "OilTemperatureOperationalLimit.OperationalLimitType.Percent.value",
+		"api": "DotAAS-V3"
+	},
+	{
+		"uniqueId": "ConnectedSubmodel/OilTemperatureOperationalLimitKMX",
+		"submodelEndpoint": "http://localhost:8081/submodels/aHR0cHM6Ly9leGFtcGxlLmNvbS9pZHMvc20vMjE1NV81MTAzXzExMzJfMzU4NQ==",
+		"idShortPath": "OilTemperatureOperationalLimit.OperationalLimitType.OverexcLimX1.kmx",
+		"api": "DotAAS-V3"
+	}
+]
+

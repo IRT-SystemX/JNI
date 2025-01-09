@@ -1,0 +1,54 @@
+{
+	"category": "VARIABLE",
+	"idShort": "Measurement",
+	"description": [
+		{
+			"language": "en",
+			"text": "Adapted from CIM data models. A Measurement represents any measured, calculated or non-measured non-calculated quantity. "
+		}
+	],
+	"id": "https://example.com/ids/aas/1/sm/1",
+	"kind": "Instance",
+	"semanticId": {
+		"type": "ExternalReference",
+		"keys": [
+			{
+				"type": "GlobalReference",
+				"value": "https://github.com/smart-data-models/dataModel.EnergyCIM/tree/master/Measurement"
+			}
+		]
+	},
+	"submodelElements": [
+		{
+			"idShort": "OilTemperatureMeasurement",
+			"value": [
+				{
+					"idShort": "dataProvider",
+					"valueType": "xs:string",
+					"value": "RTE",
+					"modelType": "Property"
+				},
+				{
+					"idShort": "OilTemperatureMeasurementValue",
+					"value": [
+						{
+							"idShort": "MeasurementValueSource",
+							"valueType": "xs:integer",
+							"value": "100",
+							"modelType": "Property"
+						},
+						{
+							"idShort": "name",
+							"valueType": "xs:string",
+							"value": "OilTemperature",
+							"modelType": "Property"
+						}
+					],
+					"modelType": "SubmodelElementCollection"
+				}
+			],
+			"modelType": "SubmodelElementCollection"
+		}
+	],
+	"modelType": "Submodel"
+}

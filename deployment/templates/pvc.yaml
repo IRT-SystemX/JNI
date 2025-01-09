@@ -1,0 +1,20 @@
+{{- range .Values.persistence }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .name }}
+  labels:
+    {{- include "jni1-poc.labels" $ | nindent 4 }}
+  {{- with .extraAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  storageClassName: {{ .storageClassName }}
+  accessModes:
+  - {{ .accessMode }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+{{- end }}

@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "mqttsource",
+		"serverUrl": "host.docker.internal",
+		"serverPort": 1884,
+		"topic": "Transformer/T_oil"
+	}
+]

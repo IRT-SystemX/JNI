@@ -1,0 +1,204 @@
+{
+  "assetAdministrationShells" : [ {
+    "modelType" : "AssetAdministrationShell",
+    "assetInformation" : null,
+    "submodels" : [ {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/1"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/2"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/3"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/4"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/5"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/6"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/7"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/8"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/9"
+      } ],
+      "type" : "ExternalReference"
+    }, {
+      "keys" : [ {
+        "type" : "Submodel",
+        "value" : "https://example.com/ids/aas/1/sm/10"
+      } ],
+      "type" : "ExternalReference"
+    } ],
+    "id" : "https://example.com/ids/aas/1",
+    "idShort" : "AasTest1"
+  } ],
+  "submodels" : [ {
+	"category": "VARIABLE",
+	"idShort": "Measurement",
+	"description": [
+		{
+			"language": "en",
+			"text": "Adapted from CIM data models. A Measurement represents any measured, calculated or non-measured non-calculated quantity. "
+		}
+	],
+	"id": "https://example.com/ids/aas/1/sm/1",
+	"kind": "Instance",
+	"semanticId": {
+		"type": "ExternalReference",
+		"keys": [
+			{
+				"type": "GlobalReference",
+				"value": "https://github.com/smart-data-models/dataModel.EnergyCIM/tree/master/Measurement"
+			}
+		]
+	},
+	"submodelElements": [
+		{
+			"idShort": "OilTemperatureMeasurement",
+			"value": [
+				{
+					"idShort": "dataProvider",
+					"valueType": "xs:string",
+					"value": "RTE",
+					"modelType": "Property"
+				},
+				{
+					"idShort": "OilTemperatureMeasurementValue",
+					"value": [
+						{
+							"idShort": "MeasurementValueSource",
+							"valueType": "xs:integer",
+							"value": "100",
+							"modelType": "Property"
+						},
+						{
+							"idShort": "name",
+							"valueType": "xs:string",
+							"value": "OilTemperature",
+							"modelType": "Property"
+						}
+					],
+					"modelType": "SubmodelElementCollection"
+				}
+			],
+			"modelType": "SubmodelElementCollection"
+		}
+	],
+	"modelType": "Submodel"
+}, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/2",
+    "idShort" : "SubmodelTestAas1SM2",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/3",
+    "idShort" : "SubmodelTestAas1SM3",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/4",
+    "idShort" : "SubmodelTestAas1SM4",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/5",
+    "idShort" : "SubmodelTestAas1SM5",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/6",
+    "idShort" : "SubmodelTestAas1SM6",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/7",
+    "idShort" : "SubmodelTestAas1SM7",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/8",
+    "idShort" : "SubmodelTestAas1SM8",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/9",
+    "idShort" : "SubmodelTestAas1SM9",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  }, {
+    "modelType" : "Submodel",
+    "kind" : "Instance",
+    "id" : "https://example.com/ids/aas/1/sm/10",
+    "idShort" : "SubmodelTestAas1SM10",
+    "submodelElements" : [ {
+      "modelType" : "Property",
+      "idShort" : "name"
+    } ]
+  } ]
+}

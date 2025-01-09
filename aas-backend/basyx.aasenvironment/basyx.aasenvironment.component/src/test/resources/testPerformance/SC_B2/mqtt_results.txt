@@ -1,0 +1,12 @@
+SC_B2: 
+10 itération : une itération = 100 AAS contient 1000 SM pour chaque
+--------------------------------------------------
+Resultats nbr messages MQTT dans le broker. 
+--------------------------------------------------
+Messages AAS:
+- topic CREATED: 1000/1000 (100%)
+- topic DELETED: 994/1000 (99,4%)
+Messages Submodels:
+- topic CREATED: 996386/1000000 (99,63%)
+- topic UPDATED: 10/10 (100%)
+- topic DELETED: 996151/1000000 (99,61%)

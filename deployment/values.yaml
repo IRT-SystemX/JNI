@@ -1,0 +1,329 @@
+# This values.yaml file is an example of the jni1-poc chart deployment,
+#   in an OKD (Openshift) environment.
+# Not all values are listed here, you may check each subchart values.yaml
+#   to get all details.
+
+mongodbAuthRootUser: &mongodbAuthRootUser "root"
+mongodbAuthExistingSecret: &mongodbAuthExistingSecret "jni1-poc-mongodb"
+mongodbServer: &mongodbServer "mongodb"
+
+pullSecrets: &pullSecrets
+  imagePullSecrets:
+    - name: "regcred"
+
+pullPolicies: &pullPolicies
+  pullPolicy: Always
+
+# Used to configure url in configMaps application.properties
+#  -> <environment|registry>{{ .Values.ingressEnv }}.{{ .Values.dn }}
+# Ingresses are directly set in this file too, see each app.
+ingressEnv: ".dev"
+dn: "jni1.whatev.fr"
+
+config:
+  # Application properties file -> template configMap.yaml
+  aasregistryApplication:
+  aasenvironmentApplication:
+  applicationLogEvents:
+
+secrets:
+  # See mongodb.auth.existingSecret
+  #  Values listed here should be set in this secret (secret name IS jni1-poc-mongodb).
+  - existingSecretName: *mongodbAuthExistingSecret
+    #name: "jni1-poc-mongodb"
+    #values:
+      #- name: mongodb-passwords # !! type is []
+        #value: []
+      #- name: mongodb-root-password
+        ## $ tr -dc A-Za-z0-9 </dev/urandom | head -c 32 ; echo ''
+        #value: ""
+      #- name: mongodb-metrics-password
+        #value: ""
+      #- name: mongodb-replica-set-key
+        #value: ""
+
+pvcGlobals: &pvcGlobals
+  storageClassName: "standard-csi"
+
+persistence:
+- name: jni1-poc-databridge-config
+  <<: *pvcGlobals
+  accessMode: ReadWriteMany
+  size: 50Mi
+  extraAnnotations:
+    helm.sh/resource-policy: keep
+
+ingressGlobals: &ingressGlobals
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-okd-dev # to create certs with let's encrypt
+  className: "openshift-default"
+
+# From mosquitto chart
+#   version: "2.4.1"
+#   repository: "https://storage.googleapis.com/t3n-helm-charts"
+mosquitto:
+  persistence:
+    enabled: true
+    <<: *pvcGlobals
+    accessMode: ReadWriteOnce
+    mountPath: /mosquitto/data
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  service:
+    type: NodePort
+  ports:
+    mqtt:
+      port: 1884
+      # sets consistent nodePort, required to set service.type=NodePort
+      nodePort: 31883       # For local mq client access : {cluster_ip}:31883
+      protocol: TCP
+    websocket:
+      port: 9090
+      protocol: TCP
+  # mosquitto.conf directly here.
+  config: |
+    persistence true
+    persistence_location /mosquitto/data/
+    log_dest stdout
+    listener 9090 0.0.0.0
+    listener 1884 0.0.0.0
+    allow_anonymous true
+    protocol websockets
+  monitoring:
+    podMonitor:
+      enabled: false
+    sidecar:
+      enabled: false
+  ingress:
+    enabled: true
+    <<: *ingressGlobals
+    hosts:
+      - host: ws-mqtt
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            servicePort: 9090
+    tls:
+      - hosts:
+          - ws-mqtt
+        secretName: mqtt-cert
+
+aasenv:
+  <<: *pullSecrets
+  image:
+    <<: *pullPolicies
+    tag:
+  command: ["/bin/sh"]
+  args:
+    - "-c"
+    - "cp /config/application.properties . && java -jar basyxExecutable.jar"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 1Gi
+  volumes:
+  - configMap:
+      name: jni1-poc-config
+      items:
+        - key: aasenvironment-application.properties
+          path: application.properties
+    name: config
+  volumeMounts:
+  - name: config
+    mountPath: /config
+  db:
+    mongodb:
+      dbname: "aasenvironments"     # From somewhere else?
+      username: aasenvironments
+      secret:
+        name: jni1-poc-environment-mongodb
+        key: "mongodb-password"
+  ingress:
+    enabled: true
+    <<: *ingressGlobals
+    hosts:
+      - host: environment
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - hosts:
+          - environment
+        secretName: environment-cert
+
+aasregistry:
+  <<: *pullSecrets
+  image:
+    <<: *pullPolicies
+    tag:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 384Mi
+  volumes:
+  - configMap:
+      name: jni1-poc-config
+      items:
+        - key: aasregistry-application.yml
+          path: application.yml
+        - key: application-logEvents.yml
+          path: application-logEvents.yml
+    name: config
+  volumeMounts:
+  - name: config
+    mountPath: /workspace/config
+  db:
+    mongodb:
+      dbname: "aasregistry"
+      username: aasregistry
+      secret:
+        name: jni1-poc-registry-mongodb
+        key: "mongodb-password"
+  ingress:
+    enabled: true
+    <<: *ingressGlobals
+    hosts:
+      - host: registry
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - hosts:
+          - registry
+        secretName: registry-cert
+
+aaswebui:
+  <<: *pullSecrets
+  image:
+    <<: *pullPolicies
+    tag:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  ingress:
+    enabled: true
+    <<: *ingressGlobals
+    hosts:
+      - host: dev.jni1.irtsystemx.org
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - hosts:
+          - dev.jni1.irtsystemx.org
+        secretName: dev.jni1.irtsystemx.org-cert
+  volumes:
+    - name: vite-local-volume
+      emptyDir: {}
+  volumeMounts:
+    - name: vite-local-volume
+      mountPath: /app/node_modules/.vite
+
+databridge:
+  <<: *pullSecrets
+  image:
+    <<: *pullPolicies
+    tag:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  volumes:
+  # To store ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/databridge
+  - name: databridge-config
+    persistentVolumeClaim:
+      claimName: jni1-poc-databridge-config
+  volumeMounts:
+  - mountPath: /usr/share/config
+    name: databridge-config
+  ingress:
+    enabled: true
+    <<: *ingressGlobals
+    hosts:
+      - host: databridge
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - hosts:
+          - databridge
+        secretName: databridge-cert
+
+mongodb:
+  # mongo values, check bitnami sources
+  image:
+    registry: harbor.irtsysx.fr/docker-proxy-cache
+    repository: bitnami/mongodb
+  auth:
+    enabled: true
+    rootUser: *mongodbAuthRootUser
+    rootPassword: 1ger5GRzRr
+    usernames:
+      - aasregistry
+      - aasenvironments
+    databases:
+      - aasregistry
+      - aasenvironments
+    ## @param auth.existingSecret Existing secret with MongoDB(&reg;) credentials (keys: `mongodb-passwords`, `mongodb-root-password`, `mongodb-metrics-password`, `mongodb-replica-set-key`)
+    ## NOTE: When it's set the previous parameters are ignored.
+    ##
+    existingSecret: *mongodbAuthExistingSecret
+  resourcesPreset: ""
+  resources:
+    requests:
+      cpu: 2
+      memory: 512Mi
+    limits:
+      cpu: 3
+      memory: 1024Mi
+
+mongo-express:
+  # mongo-express values, check bitnami sources
+  image:
+    registry: harbor.irtsysx.fr/docker-proxy-cache
+  ingress:
+    enabled: true
+    pathType: ImplementationSpecific
+    <<: *ingressGlobals
+    hosts:
+      - host: mongo-express
+        paths:
+          - /
+    tls:
+      - hosts:
+          - mongo-express
+        secretName: mongo-express-cert
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  mongodbServer: *mongodbServer
+  mongodbEnableAdmin: true
+  mongodbAdminUsername: *mongodbAuthRootUser
+  mongodbAdminPassword: "password"      # Must be set with any value to get the correct env var at deployment. # Is overrided by the existing secret, no worries!
+  existingSecret: *mongodbAuthExistingSecret
+  existingSecretKeyMongodbAdminPassword: mongodb-root-password
+  basicAuthUsername: "mongoe"
+  basicAuthPassword: "password"      # Must be set with any value to get the correct env var at deployment. # Is overrided by the existing secret, no worries!

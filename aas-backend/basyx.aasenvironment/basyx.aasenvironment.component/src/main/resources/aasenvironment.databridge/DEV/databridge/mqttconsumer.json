@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "mqttsource",
+		"serverUrl": "jni1-poc-mosquitto.jni1-dev.svc.cluster.local",
+		"serverPort": 1884,
+		"topic": "Transformer/T_oil"
+	}
+]

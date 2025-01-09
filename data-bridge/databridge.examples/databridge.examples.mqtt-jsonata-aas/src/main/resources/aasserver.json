@@ -1,0 +1,18 @@
+[
+	{
+		"uniqueId": "ConnectedSubmodel/ConnectedPropertyA",
+		"submodelEndpoint": "http://localhost:4001/shells/TestUpdatedDeviceAAS/aas/submodels/ConnectedSubmodel/submodel",
+		"idShortPath": "ConnectedPropertyA"
+	},
+	{
+		"uniqueId": "ConnectedSubmodel/ConnectedPropertyB",
+		"submodelEndpoint": "http://localhost:4001/shells/TestUpdatedDeviceAAS/aas/submodels/ConnectedSubmodel/submodel",
+		"idShortPath": "ConnectedPropertyB",
+		"api": "BaSyx"
+	},
+	{
+		"uniqueId": "ConnectedTestSubmodel/ConnectedPropertyC",
+		"submodelEndpoint": "http://localhost:4001/shells/https%3A%2F%2Fexample.com%2Fids%2Faas%2F7053_6021_1032_9066/aas/submodels/ConnectedTestSubmodel/submodel",
+		"idShortPath": "ConnectedPropertyC"
+	}
+]

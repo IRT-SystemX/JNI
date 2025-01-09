@@ -1,0 +1,63 @@
+# .gitlab-ci.yml file
+# -> Runners executors are kubernetes ones
+
+# Group Variables:
+#  HARBOR_USER -> gitlab group settings CI/CD Variables
+#  HARBOR_PWD -> gitlab group settings CI/CD Variables
+#  REGISTRY -> gitlab group settings CI/CD Variables
+
+variables:
+  CHART: "jni1-poc"
+  CLUSTER_NS: "jni1-dev"
+  ENV: "dev"
+  HELM_UPGRADE_CMD_LINE_SET_ARGS: ""
+  CHART_VERSION: "0.1.0"
+
+default:
+  # Tags to select the runner with rights to deploy in adhob ns.
+  tags:
+    - jni1
+
+stages:
+  - package
+  - deploy
+
+# To update the Chart version, only when templates are updated:
+# then, just create a new tag in this repo, this will trigger this
+# job.
+package-helm:
+  stage: package
+  image: alpine/helm:3.12.2
+  interruptible: true
+  before_script:
+    - helm registry login --username=${HARBOR_USER} --password=${HARBOR_PWD} $REGISTRY
+  script:
+    - helm package --dependency-update --version ${CI_COMMIT_TAG} .
+    - PACKAGE=$(ls *.tgz)
+    - echo "${PACKAGE}"
+    - helm push ${PACKAGE} oci://$REGISTRY/jni1
+  rules:
+    # Only package if commit tag m.n.p
+    - if: $CI_COMMIT_TAG =~ /^((0|[1-9]\d*){1,2}\.){2}(0|[1-9]\d*){1,2}$/
+
+# To upgrade the deployed chart, this job is triggered only from other ci/cd
+# pipelines, on branches main/master or dev/develop. Env vars must be set in upstream
+# pipelines to define where this chart should be upgraded (dev or prod).
+deploy-chart:
+  stage: deploy
+  # Use internal proxy cache of docker hub
+  image: alpine/k8s:1.24.16
+  interruptible: true
+  inherit:              # Default is true (should not be set explicitly, but...)
+    variables: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "dev")
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && ($CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main")
+    - if: $CI_COMMIT_TAG =~ /^((0|[1-9]\d*){1,2}\.){2}(0|[1-9]\d*){1,2}$/
+      when: never
+  script:
+    - echo "$ENV $CLUSTER_NS"
+    - helm registry login --username=${HARBOR_USER} --password=${HARBOR_PWD} $DOCKER_REGISTRY
+    - helm repo update
+    - helm upgrade -i -n ${CLUSTER_NS} $CHART oci://$REGISTRY/jni1/$CHART -f values.${ENV}.yaml ${HELM_UPGRADE_CMD_LINE_SET_ARGS} --wait --atomic --timeout 20m --version ${CHART_VERSION}
+

@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "ConnectedSubmodel/OilTemperatureMeasurement",
+		"submodelEndpoint": "https://environment.dev.jni1.irtsysx.fr/submodels/aHR0cHM6Ly9leGFtcGxlLmNvbS9pZHMvc20vNzM4MF82MTgyXzExMzJfNjMyOA==",
+		"idShortPath": "OilTemperatureMeasurement.OilTemperatureMeasurementValue.MeasurementValueSource",
+		"api": "DotAAS-V3"
+	}
+]

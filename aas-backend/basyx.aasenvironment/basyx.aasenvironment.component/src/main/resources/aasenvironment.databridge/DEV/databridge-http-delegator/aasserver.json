@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "ConnectedSubmodel/ManufacturerName",
+		"submodelEndpoint": "http://host.docker.internal:8081/submodels/aHR0cDovL2FjcGx0LnRlc3QvU3VibW9kZWxzL0Fzc2V0cy9UZXN0QXNzZXQvSWRlbnRpZmljYXRpb24=",
+		"idShortPath": "ManufacturerName",
+		"api": "DotAAS-V3"
+	}
+]

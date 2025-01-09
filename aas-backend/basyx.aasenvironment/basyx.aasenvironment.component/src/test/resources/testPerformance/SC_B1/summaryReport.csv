@@ -1,0 +1,7 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+[POST] Upload AAS Equipment file aasx,100,3953,3527,4468,201.56,0.000%,.10256,0.03,44.09,308.0
+[GET] Registry Equipment,100,22,10,51,6.44,0.000%,.10303,0.05,0.02,539.0
+[GET] Submodel Temperature value,200,11,6,50,4.90,0.000%,.20606,0.05,0.06,265.5
+[PATCH] Submodel Value OilTemperature,100,16,11,24,2.87,0.000%,.10303,0.02,0.03,191.0
+[Delete] Equipment AAS,10000,57,41,368,7.49,0.000%,10.24188,2.76,3.29,275.7
+TOTAL,10500,93,6,4468,379.18,0.000%,10.70484,2.90,47.21,277.5

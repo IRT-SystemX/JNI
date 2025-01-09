@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jni1-poc-config
+  labels:
+    {{- include "jni1-poc.labels" . | nindent 4 }}
+data:
+{{- with .Values.config.aasregistryApplication }}
+  aasregistry-application.yml:
+  {{ . | nindent 6 -}}
+{{- else }}
+  aasregistry-application.yml: |
+    ---
+    thirdparty:
+      aasenvironment.server.url: https://environment{{ .Values.ingressEnv }}.{{ .Values.dn }}/shells
+    events:
+      sink:
+    description:
+      profiles: https://admin-shell.io/aas/API/3/0/AssetAdministrationShellRegistryServiceSpecification/SSP-001
+    springdoc:
+      api-docs:
+          path: /api-docs
+    springfox:
+      documentation:
+        enabled: true
+      #  open-api.v3.path: /api-docs
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "health,metrics"
+    logging:
+      level:
+        root: INFO
+    server:
+      port: 8080
+      servlet:
+        contextPath: /api/v3.0
+      error:
+        whitelabel:
+          enabled: false
+    servlet:
+      headers:
+        - path: /**
+          values:
+            Access-Control-Allow-Origin: "*"
+            Access-Control-Allow-Methods: POST,PUT,GET,DELETE,OPTIONS
+            Access-Control-Allow-Headers: Content-Type, Accept
+            Access-Control-Max-Age: 10000
+        - path: /api/v3.0/shell-descriptors
+          values:
+            Access-Control-Allow-Origin: "*"
+            Access-Control-Allow-Methods: POST,PUT,GET,DELETE,OPTIONS
+            Access-Control-Allow-Headers: Accept, Content-Type
+          methods:
+            - OPTIONS
+        - path: /registry/shell-descriptors/search
+          values:
+            Access-Control-Allow-Origin: "*"
+            Access-Control-Allow-Methods: POST,GET,OPTIONS
+            Access-Control-Allow-Headers: Accept, Content-Type
+          methods:
+            - OPTIONS
+    spring:
+      application:
+        name: Basyx Aas Registry
+      jackson:
+        date-format: org.eclipse.digitaltwin.basyx.aasregistry.service.RFC3339DateFormat
+        serialization:
+          WRITE_DATES_AS_TIMESTAMPS: false
+      cloud:
+        stream:
+          bindings:
+            default:
+              key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            aasRegistryBinding:
+              destination: aas-registry
+              content-type: application/json
+              producer:
+                partitionKeyExpression: payload.id
+                partitionCount: 1
+      data:
+        mongodb:
+          uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@{{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.mongodb.service.ports.mongodb }}/${MONGODB_DB}
+{{- end }}
+{{- with .Values.config.aasenvironmentApplication  }}
+  aasenvironment-application.properties : |
+  {{ . | nindent 6 -}}
+{{- else }}
+  aasenvironment-application.properties : |
+    server.port=8081
+    spring.application.name=AAS Environment
+    spring.servlet.multipart.max-file-size=10MB
+    spring.servlet.multipart.max-request-size=10MB
+
+    basyx.backend = MongoDB
+    spring.data.mongodb.database=${MONGODB_DB}
+    spring.data.mongodb.uri=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@{{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.mongodb.service.ports.mongodb }}/${MONGODB_DB}
+
+    basyx.aasrepository.feature.mqtt.enabled = true
+    basyx.submodelrepository.feature.mqtt.enabled = true
+    mqtt.clientId=TestClientDEV
+    mqtt.hostname = {{ .Release.Name }}-mosquitto.{{ .Release.Namespace }}.svc.cluster.local
+    mqtt.port = 1884
+
+    basyx.cors.allowed-origins=*
+    basyx.cors.allowed-methods=*
+
+    aasregistry.server.url=https://registry{{ .Values.ingressEnv }}.{{ .Values.dn }}/api/v3.0
+    aas.server.url=https://environment{{ .Values.ingressEnv }}.{{ .Values.dn }}
+{{- end }}
+{{- with .Values.config.applicationLogEvents  }}
+  application-logEvents.yml : |
+  {{ . | nindent 6 -}}
+{{- else }}
+  application-logEvents.yml : |
+    ---
+    events:
+      sink: log
+{{- end }}

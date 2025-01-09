@@ -1,0 +1,8 @@
+[
+	{
+		"datasource": "mqttsource",
+		"transformers": ["jsonataTemperature"],
+		"datasinks": ["ConnectedSubmodel/OilTemperatureMeasurement"],
+		"trigger": "event"
+	}
+]

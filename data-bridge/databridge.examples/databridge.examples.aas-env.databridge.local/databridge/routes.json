@@ -1,0 +1,28 @@
+[
+	{
+		"datasource": "mqttsource",
+		"transformers": ["jsonataTemperature"],
+		"datasinks": ["ConnectedSubmodel/OilTemperatureMeasurement"],
+		"trigger": "event"
+	},
+	{
+		"datasource": "httpsource",
+		"transformers": ["jsonataKMX"],
+		"datasinks": ["ConnectedSubmodel/OilTemperatureOperationalLimitKMX"],
+		"trigger": "request",
+		"triggerData": {
+			"host": "0.0.0.0",
+			"port": "8090",
+			"path": "/OilTemperatureOperationalLimitKMX"
+		}
+	},
+	{
+	    "datasource": "httpsource",
+	    "transformers": ["jsonataPercent"],
+	    "datasinks": ["ConnectedSubmodel/OilTemperatureOperationalLimitPercent"],
+	    "trigger": "timer",
+	    "triggerData" : {
+	    	"timerName": "timer1"
+    	}
+  	}
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "uniqueId": "httpsource",
+    "serverUrl": "http://host.docker.internal:2018"
+  }
+]

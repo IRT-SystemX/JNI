@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: updatedatabridgeconf
+spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - args:
+    - sleep
+    - 5m
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+    image: busybox
+    name: updatedatabridgeconf
+    resources:
+      requests:
+        cpu: 0.05
+        memory: 50Mi
+      limits:
+        cpu: 0.1
+        memory: 100Mi
+    volumeMounts:
+    - name: config
+      mountPath: "/usr/share/config"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+  volumes:
+  - name: config
+    persistentVolumeClaim:
+      claimName: jni1-poc-databridge-config
+status: {}

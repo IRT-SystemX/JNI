@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "mqttsource",
+		"serverUrl": "192.168.211.155",
+		"serverPort": 1884,
+		"topic": "Transformer/T_oil"
+	}
+]

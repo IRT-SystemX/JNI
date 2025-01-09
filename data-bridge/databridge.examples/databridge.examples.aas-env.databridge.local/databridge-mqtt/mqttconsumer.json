@@ -1,0 +1,8 @@
+[
+	{
+		"uniqueId": "mqttsource",
+		"serverUrl": "localhost",
+		"serverPort": 1884,
+		"topic": "ManufacturerName"
+	}
+]

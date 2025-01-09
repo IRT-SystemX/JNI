@@ -1,0 +1,147 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:5.0.10
+    container_name: mongo
+    # Provide mongo config
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoAdmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoPassword
+    # Maps tcp port to host
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data-5.0.10:/data/db
+    networks:
+      - basyx-java-server-sdk
+      
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongoAdmin:mongoPassword@mongo:27017
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    ports:
+      - 8086:8081
+    networks:
+      - basyx-java-server-sdk
+    depends_on:
+      - mongo
+      
+  aas-env:
+    image: eclipsebasyx/aasenvironment:${VERSION}
+    container_name: aas-env
+    volumes:
+      - ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/aasenvironment-application.properties:/application/application.properties
+    # enable this line to map the aas model file from your local machine to the docker image. update also the config file of the aas-environment component <application.properties> and set the filePath to upload in basyx.environment attribute.
+    #  - ./basyx.aasenvironment/basyx.aasenvironment.component/src/test/resources/testEnvironment.json:/application/testEnvironment.json
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongoAdmin:mongoPassword@mongo:27017/aasenvironments?authSource=admin
+    ports:
+      - 8081:8081
+    networks:
+      - basyx-java-server-sdk
+    depends_on:
+      - mongo
+      - mqtt
+        
+  aas-registry:
+    image: eclipsebasyx/aas-registry-log-mongodb:${VERSION}
+    container_name: aas-registry
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongoAdmin:mongoPassword@mongo:27017
+    volumes:
+      - ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/aasregistry-application.yml:/workspace/config/application.yml
+      - ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/application-logEvents.yml:/workspace/config/application-logEvents.yml
+    networks:
+      - basyx-java-server-sdk
+    depends_on:
+      - mongo
+    restart: always
+
+  aas-web-ui_v2:
+    image: aas-web-ui_v2:${VERSION}
+    #build: ../jni1-pocv1-frontend/.
+    container_name: aas-web-ui_v2
+    ports:
+      - 80:3001
+    restart: always
+    
+  mqtt:
+    image: eclipse-mosquitto:2.0.15
+    container_name: mqtt
+    ports:
+      - 1884:1884
+    environment:
+      VITE_REGISTRY_PATH: "http://${HOST}:8080/api/v3.0"
+      VITE_SUBMODEL_REGISTRY_PATH: ""
+      VITE_AAS_SERVER_PATH: "http://${HOST}:8081"
+    volumes:
+      - ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/mosquitto:/mosquitto/config
+    
+  databridge:
+    image: eclipsebasyx/databridge:${VERSION}
+    container_name: databridge-device-integration
+    ports:
+      - 8090:8090
+    volumes:
+      - ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/databridge:/usr/share/config
+      #- ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/databridge-mqtt:/usr/share/config
+      #- ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/databridge-http-delegator:/usr/share/config
+      #- ./basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources/aasenvironment.databridge/${ENV}/databridge-timer:/usr/share/config
+    depends_on:
+      - aas-env
+      - mqtt
+    networks:
+      - basyx-java-server-sdk
+    
+
+#  keycloak:
+#    image: jboss/keycloak:latest
+#    environment:
+#      KEYCLOAK_DB_VENDOR: POSTGRES
+#      KEYCLOAK_DB_DATABASE: admin
+#      KEYCLOAK_DB_USER: admin
+#      KEYCLOAK_DB_PASSWORD: admin
+#      KEYCLOAK_USER: admin
+#      KEYCLOAK_PASSWORD: admin
+#    container_name: 'keycloak'
+#    restart: always
+#    ports:
+#      - 8087:8080
+#      - 8443:8443
+#    depends_on:
+#      - keycloak-db
+
+#  keycloak-db:
+#    container_name: 'keycloakdb'
+#    image: postgres:10
+#    restart: always
+#    ports:
+#      - 5432:5432
+#    environment:
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: admin
+#      POSTGRES_DB: keycloakdb
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#    command:
+#      - kc.sh start-dev
+
+volumes:
+  mongo-data-5.0.10:
+    driver: local
+#  pgdata:
+#    driver: local
+    
+networks:
+  basyx-java-server-sdk:
+    name: basyx-java-server-sdk
+    driver: bridge
+    internal: false
+    

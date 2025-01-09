@@ -1,0 +1,8 @@
+2024-01-22 16:27:56.737 ERROR 1 --- [nio-8081-exec-8] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : 
+Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; 
+nested exception is org.springframework.web.multipart.MaxUploadSizeExceededException: Maximum upload size exceeded; 
+nested exception is java.lang.IllegalStateException: org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException: 
+the request was rejected because its size (42563797) exceeds the configured maximum (10485760)] with root cause
+aas-env  |
+aas-env  | org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException: 
+the request was rejected because its size (42563797) exceeds the configured maximum (10485760)
