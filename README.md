@@ -1,6 +1,8 @@
 # JNI Platform
 
-JNI Platform based on BaSyx Java V2 components fully compatible with *Details of the Asset Administration Shell V3* are contained. For each component, a multitude of backends (e.g., InMemory, MongoDB) as well as further features (MQTT, ...) are provided. 
+![JNI_platform_logo](img/jni-logo.png)
+
+JNI Platform based on BaSyx Java V2 components fully compatible with the *Asset Administration Shell* v3. For each component, a multitude of backends (e.g., InMemory, MongoDB) as well as further features (MQTT, ...) are provided. 
 
 The following off-the-shelf components are available:
 
