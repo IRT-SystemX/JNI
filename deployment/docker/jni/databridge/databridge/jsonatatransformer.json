@@ -1,0 +1,20 @@
+[
+	{
+		"uniqueId": "jsonataTemperature",
+		"queryPath": "jsonataTemperature.jsonata",
+		"inputType": "JsonString",
+		"outputType": "JsonString"
+	},
+	{
+		"uniqueId": "jsonataPercent",
+		"queryPath": "jsonataPercent.jsonata",
+		"inputType": "JsonString",
+		"outputType": "JsonString"
+	},
+	{
+		"uniqueId": "jsonataKMX",
+		"queryPath": "jsonataKMX.jsonata",
+		"inputType": "JsonString",
+		"outputType": "JsonString"
+	}
+]
