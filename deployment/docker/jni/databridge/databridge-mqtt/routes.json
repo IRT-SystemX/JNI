@@ -1,0 +1,8 @@
+[
+	{
+		"datasource": "mqttsource",
+		"transformers": ["jsonataA"],
+		"datasinks": ["ConnectedSubmodel/ManufacturerName"],
+		"trigger": "event"
+	}
+]

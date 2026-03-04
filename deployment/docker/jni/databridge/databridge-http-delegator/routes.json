@@ -1,0 +1,13 @@
+[
+	{
+		"datasource": "httpsource",
+		"transformers": ["jsonataA"],
+		"datasinks": ["ConnectedSubmodel/ManufacturerName"],
+		"trigger": "request",
+		"triggerData": {
+			"host": "0.0.0.0",
+			"port": "8090",
+			"path": "/ManufacturerName"
+		}
+	}
+]

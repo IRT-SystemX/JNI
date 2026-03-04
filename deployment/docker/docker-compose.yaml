@@ -1,0 +1,169 @@
+services:
+  mongo:
+    image: mongo:5.0.10
+    container_name: mongo
+    restart: always
+    healthcheck:
+      test: mongo
+      interval: 10s
+      start_period: 5s
+      retries: 5
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoAdmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoPassword
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data-loc:/data/db
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongoAdmin:mongoPassword@mongo:27017
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    ports:
+      - 8086:8081
+    depends_on:
+      - mongo
+
+  aas-env:
+    image: eclipsebasyx/aas-environment:2.0.0-SNAPSHOT
+    volumes:
+      - $PWD/jni/aas-env.properties:/application/application.properties
+      - $PWD/jni/aas:/application/aas
+    ports:
+      - 8081:8081
+    depends_on:
+      mongo:
+        condition: service_healthy
+      mqtt:
+        condition: service_healthy
+      aas-registry:
+        condition: service_healthy
+      sm-registry:
+        condition: service_healthy
+
+  aas-registry:
+    image: eclipsebasyx/aas-registry-log-mongodb:2.0.0-SNAPSHOT
+    ports:
+      - 8082:8080
+    volumes:
+      - $PWD/jni/aas-registry.yml:/workspace/config/application.yml
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  sm-registry:
+    image: eclipsebasyx/submodel-registry-log-mongodb:2.0.0-SNAPSHOT
+    ports:
+      - 8083:8080
+    volumes:
+      - $PWD/jni/sm-registry.yml:/workspace/config/application.yml
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  aas-discovery:
+    image: eclipsebasyx/aas-discovery:2.0.0-SNAPSHOT
+    ports:
+      - 8084:8081
+    volumes:
+      - $PWD/jni/aas-discovery.properties:/application/application.properties
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  jni-frontend:
+    image: jni-frontend
+    build: ../../jni-frontend
+    container_name: jni-frontend
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - VITE_AAS_DISCOVERY_PATH=http://localhost:8084/lookup/shells
+      - VITE_AAS_REGISTRY_PATH=http://localhost:8082/shell-descriptors
+      - VITE_SUBMODEL_REGISTRY_PATH=http://localhost:8083/submodel-descriptors
+      - VITE_AAS_REPO_PATH=http://localhost:8081/shells
+      - VITE_SUBMODEL_REPO_PATH=http://localhost:8081/submodels
+      - VITE_CD_REPO_PATH=http://localhost:8081/concept-descriptions
+      - VITE_SCENARIO_MANAGER_MODEL_LIBRARY_PATH=http://localhost:8085/templates
+      - VITE_SCENARIO_MANAGER_WORKFLOW_MANAGER_PATH=http://localhost:8085/dashboard
+      - VITE_SCENARIO_MANAGER_DECISION_SUPPORT_SYSTEM_PATH=http://localhost:8085/dags
+    depends_on:
+      aas-env:
+        condition: service_healthy
+
+  mqtt:
+    image: eclipse-mosquitto:2.0.15
+    container_name: mqtt
+    ports:
+      - 1884:1884
+    healthcheck:
+      test:
+        ["CMD-SHELL", mosquitto_sub -p 1884 -t 'topic' -C 1 -E -i probe -W 3]
+      interval: 5s
+      retries: 3
+      start_period: 1s
+      timeout: 10s
+    volumes:
+      - $PWD/jni/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  databridge:
+    image: eclipsebasyx/databridge:1.0.0-milestone-08
+    container_name: databridge-device-integration
+    ports:
+      - 8090:8090
+    volumes:
+      - $PWD/jni/databridge:/usr/share/config
+    depends_on:
+      - aas-env
+      - mqtt
+
+  jni-scenario-manager-model-library:
+    image: irtsystemx/jni-scenario-manager-model-library:1.0.0
+    container_name: jni-scenario-manager-model-library
+    ports:
+      - 5051:5051
+    restart: always
+    environment:
+      APP_NAME: WorkflowManagerAPI
+      ADMIN_EMAIL: example@example.com
+      BASE_HOST: localhost
+      BASE_PORT_WORKFLOWMANAGER: 5051
+      BASE_PORT: 5051
+      BASE_URL: 0.0.0.0:5051
+      DB_NAME: workflow
+      DB_URL: mongodb://mongoAdmin:mongoPassword@mongo:27017/workflow?authSource=admin
+      ENVIRONMENT: dev
+      PYTHONUNBUFFERED: 1
+      ALLOWED_ORIGINS: http://localhost,http://localhost:3000,http://localhost:8081,http://localhost:8085
+    command: uvicorn main:app --host 0.0.0.0 --port 5051 --reload
+
+  jni-scenario-manager:
+    image: irtsystemx/jni-scenario-manager:1.0.0
+    container_name: jni-scenario-manager
+    user: "0:0"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${LOCAL_DATA}/.config/dagu:/root/.dagu
+      - ${LOCAL_DATA}/.config/dagu/.local/share:/home/dagu/.local/share
+      - ${LOCAL_DATA}/dagu-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DAGU_HOST=0.0.0.0
+      - DAGU_PORT=8085
+    ports:
+      - 8085:8085
+    restart: always
+
+volumes:
+  mongo-data-loc:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${LOCAL_DATA}/db-data"
