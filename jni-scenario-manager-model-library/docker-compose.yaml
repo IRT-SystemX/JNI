@@ -1,0 +1,30 @@
+version: '3.6'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mymongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoAdmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoPassword
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - 27000:27000
+    networks:
+      - mongo-network
+  workflow-manager:
+    build:
+      context: .
+      target: service
+    ports:
+      - 5050:5050
+    env_file: "compose.env"
+    command: uvicorn main:app --host 0.0.0.0 --port 5050 --reload
+
+
+volumes:
+  mongodata:
+    driver: local
+
+networks:
+  mongo-network:
