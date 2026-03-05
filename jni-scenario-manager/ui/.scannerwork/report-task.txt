@@ -1,0 +1,6 @@
+projectKey=JNI1-WP4-Workflow-Manager
+serverUrl=https://sonarqube.irtsysx.fr
+serverVersion=10.7.0.96327
+dashboardUrl=https://sonarqube.irtsysx.fr/dashboard?id=JNI1-WP4-Workflow-Manager
+ceTaskId=fd05bfd8-90b8-410f-a485-d6e871440cb9
+ceTaskUrl=https://sonarqube.irtsysx.fr/api/ce/task?id=fd05bfd8-90b8-410f-a485-d6e871440cb9
