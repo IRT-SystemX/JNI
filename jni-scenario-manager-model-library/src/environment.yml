@@ -1,0 +1,27 @@
+# CREATE ENV
+# mamba env create -f environment.yml
+#
+# UPDATE ENV
+# mamba env update --name jni --file environment.yml
+#
+# REMOVE ENV
+# mamba remove --name jni --all
+#
+# GET Requirement.txt
+# mamba list -e > requirements.txt
+
+name: jni
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - fastapi
+  - uvicorn-standard
+  - python-dotenv
+  - orjson
+  - pydantic-settings
+  - pydantic=2.6.4
+  - httpx
+  - pip:
+      - odmantic
