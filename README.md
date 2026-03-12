@@ -6,10 +6,12 @@ JNI Platform based on BaSyx Java V2 components fully compatible with the *Asset 
 
 The following off-the-shelf components are available:
 
-* [JNI Frontend](aas-frontend)
-* [JNI Backend](aas-backend)
-* [JNI data-bridge](data-bridge)
-* [JNI deployment](deployment)
+* [JNI Portal](jni-portal)
+* [JNI Asset Administration Shell Env](jni-asset-administration-shell-env)
+* [JNI Data Bridge](jni-data-bridge)
+* [JNI Deployment](jni-deployment)
+* [JNI Scenario Manager](jni-scenario-manager)
+* [JNI Scenario Manager - Model Library](jni-scenario-manager-model-library)
 
 ## Linked scientific contributions 
 This implementation is aligned with the IEC 63278 standard and the Asset Administration Shell vision of Industry 4.0. [This article](https://hal.science/hal-04612160/document) presents 19 criteria applied to the selection of existing open-source implementations, as well as the integration of these into a technical architecture and its implementation.
@@ -17,22 +19,21 @@ This implementation is aligned with the IEC 63278 standard and the Asset Adminis
 For more details about the State of the Art analysis and components selection criteria, please refer to this [paper](https://hal.science/hal-04612160/document)
 
 
-## JNI Platform : docker-compose files
-[docker-compose.yml](docker-compose.yml) configuration file illustrates the setup for the maven build and test project.
+# Deployment using `docker compose` 
+[docker-compose.yml](jni-deployment/docker/docker-compose.yml) configuration file contains all the docker images needed to deploy JNI Platform in its centralized architecture (see below).
 
-[docker-compose-centralized.yml](docker-compose-centralized.yml) configuration file contains all the docker images needed to run:
-* [AAS Environment](basyx.aasenvironment).
-* [AAS Registry](basyx.aasregistry)
-* Front-end application (see project https://git.irt-systemx.fr/jni1/wp4/jni1-pocv1-frontend)
-* DataBridge configuration used to integrate data sources within Asset Administration Shells (see project https://git.irt-systemx.fr/jni1/wp4/jni1-poc-v1-data-bridge).
+```
+cd jni-deployment/docker
+docker compose up -d --build
+```
 
-You can find the dataBridge configuration folder (aasenvironment.databridge) under (basyx.aasenvironment/basyx.aasenvironment.component/src/main/resources).
+# JNI Dashboarding
+We equipe JNI Platform with a dashboarding tool (Appsmith) through [docker-compose.yml](jni-deployment/docker/docker-compose.yml). This tool makes it easy to build a dashboard to interract with your JNI.
 
-We are providing `DEV` and `PROD` configs. To run the [docker-compose-centralized.yml](docker-compose-centralized.yml) file, you need to setup ${ENV} and ${HOST} environment variables first:
-- 'ENV' variable contains the deploiment mode (DEV or PROD)
-- 'HOST' variable for setting the host name or ip address (localhost or another domain name or ip address)
+* To set up your Appsmith account, please refer to the video on this page: https://docs.appsmith.com/getting-started/setup/installation-guides/docker
+* To illustrate how to make a dashboard for JNI, we provide some examples in [JNI Dashboarding](jni-dashboarding) that you can import into your workspace.
 
-# Two deployment methods
+# Architecture
 **1. Centralized architecture:**
 - Deployment of the AAS Environment component module that englobes the AAS Repository, Submodel Repository and Concept Description Repository modules.
 - Deployment of the AAS Registry component module that provides the AAS descriptor object which contains endpoint information for the AAS Environment.
