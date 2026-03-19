@@ -22,6 +22,8 @@ For more details about the State of the Art analysis and components selection cr
 # Deployment using `docker compose` 
 [docker-compose.yml](jni-deployment/docker/docker-compose.yml) configuration file contains all the docker images needed to deploy JNI Platform in its centralized architecture (see below).
 
+> **Atention**: To allow clients and other services to access BaSyx from outside your network, you must set the environment variable `basys.externalurl` to your service's PUBLIC ADDRESS in the configuration file `jni-deployment/docker/jni/aas-env.properties`.
+
 ```
 cd jni-deployment/docker
 docker compose up -d --build
