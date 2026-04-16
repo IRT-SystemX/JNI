@@ -30,12 +30,6 @@ cd jni-deployment/docker
 docker compose up -d --build
 ```
 
-## JNI Dashboarding
-We equipe JNI Platform with a dashboarding tool (Appsmith) through [docker-compose.yml](jni-deployment/docker/docker-compose.yml). This tool makes it easy to build a dashboard to interract with your JNI.
-
-* To set up your Appsmith account, please refer to the video on this page: https://docs.appsmith.com/getting-started/setup/installation-guides/docker
-* To illustrate how to make a dashboard for JNI, we provide some examples in [JNI Dashboarding](jni-dashboarding) that you can import into your workspace.
-
 ## Wiki
 This projects contains a complete [wiki](https://github.com/IRT-SystemX/JNI/wiki) where further information about the architecture, datamodel, usage can be found, as well as build instructions.
 
